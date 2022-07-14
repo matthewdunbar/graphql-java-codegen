@@ -1,7 +1,0 @@
-type TypeWithMandatoryField implements InterfaceWithOptionalField {
-    test: Int!
-}
-
-interface InterfaceWithOptionalField {
-    test: Int
-}

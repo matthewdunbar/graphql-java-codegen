@@ -1,3 +1,0 @@
-type UnionMember2 {
-    someField: String
-}
