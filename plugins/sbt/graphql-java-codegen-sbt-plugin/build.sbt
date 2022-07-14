@@ -30,8 +30,9 @@ lazy val `graphql-codegen-sbt-plugin` = Project(id = "graphql-codegen-sbt-plugin
       commitNextVersion,
       pushChanges
     ),
+    resolvers += Resolver.mavenLocal,
     libraryDependencies ++= Seq(
-      "io.github.kobylynskyi" % "graphql-java-codegen" % (version in ThisBuild).value,
+      "com.lifeway.contentplatform" % "graphql-java-codegen" % (version in ThisBuild).value,
       "org.freemarker" % "freemarker" % "2.3.31",
       "com.graphql-java" % "graphql-java" % "16.2",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.1",
