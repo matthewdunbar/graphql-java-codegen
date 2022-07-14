@@ -1,7 +1,5 @@
 import sbtrelease.ReleaseStateTransformations._
 
-name := "graphql-codegen-sbt-plugin"
-
 // must be equals to oss Group Id
 
 val jValidationVersion = settingKey[String]("default java Validation api").withRank(KeyRanks.Invisible)
@@ -16,26 +14,23 @@ lazy val `graphql-codegen-sbt-plugin` = Project(id = "graphql-codegen-sbt-plugin
     scriptedBufferLog := false,
     scriptedLaunchOpts += s"-Dplugin.version=${version.value}",
     scalacOptions += "-target:jvm-1.8",
-    organization := s"com.lifeway.contentplatform",
+    organization := "com.lifeway.contentplatform",
+    scalaVersion := "2.12.12",
     name := "graphql-codegen-sbt-plugin",
     releaseIgnoreUntrackedFiles := true,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
       runClean,
-      releaseStepCommandAndRemaining("^ scripted"),
       setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      releaseStepCommandAndRemaining("^ publish"),
-      setNextVersion,
-      commitNextVersion,
+      publishArtifacts
     ),
     updateOptions          := updateOptions.value.withGigahorse(false),
     resolvers ++= Seq[Resolver](
-      "Artifactory" at "https://artifactory.prod.lifeway.com/artifactory/contentplatform/",
-      "Artifactory-OSS-Snapshot" at "https://oss.jfrog.org/artifactory/libs-snapshot/",
-      "Artifactory-OSS-Release" at "https://oss.jfrog.org/artifactory/libs-release/"
+      "LifeWay Account Artifactory" at "https://artifactory.prod.lifeway.com/artifactory/lifewayaccount/",
+      "LifeWay Content Platform Artifactory" at "https://artifactory.prod.lifeway.com/artifactory/contentplatform/",
+      "Lifeway Repo Internal Libs" at "https://artifactory.prod.lifeway.com/artifactory/libs-release-local/",
+      Resolver.jcenterRepo
     ),    
     credentials += Credentials(
       "Artifactory Realm",
@@ -43,11 +38,36 @@ lazy val `graphql-codegen-sbt-plugin` = Project(id = "graphql-codegen-sbt-plugin
       sys.env.getOrElse("ARTIFACTORY_LW_USER", "bad user"),
       sys.env.getOrElse("ARTIFACTORY_LW_KEY", "bad key")
     ),
-    homepage          := Some(url(s"https://github.com/matthewdunbar/graphql-java-codegen")),
+    pomExtra := {
+      <scm>
+        <url>git@github.com:LifewayIT/graphql-java-codegen.git</url>
+        <connection>scm:git:git@github.com:LifewayIT/graphql-java-codegen.git</connection>
+      </scm>
+        <developers>
+          <developer>
+            <id>lifeway</id>
+            <name>LifeWay Christian Resources</name>
+            <url>https://www.lifeway.com</url>
+          </developer>
+        </developers>
+    },
+    homepage          := Some(url(s"https://github.com/LifewayIT/graphql-java-codegen")),
     publishMavenStyle := true,
-    publishTo := {
-        Some("Artifactory Realm" at "https://artifactory.prod.lifeway.com/artifactory/contentplatform")
+    pomIncludeRepository := { _ =>
+      false
     },    
+    resolvers += 
+"Artifactory" at "https://artifactory.prod.lifeway.com/artifactory/contentplatform/",
+    publishTo := {
+      if (version.value.trim.endsWith("SNAPSHOT"))
+        Some(
+          "Artifactory Realm" at
+            "https://artifactory.prod.lifeway.com/artifactory/contentplatform;build.timestamp=" +
+            new java.util.Date().getTime
+        )
+      else
+        Some("Artifactory Realm" at "https://artifactory.prod.lifeway.com/artifactory/contentplatform")
+    },
     libraryDependencies ++= Seq(
       "com.lifeway.contentplatform" % "graphql-java-codegen" % (version in ThisBuild).value,
       "org.freemarker" % "freemarker" % "2.3.31",

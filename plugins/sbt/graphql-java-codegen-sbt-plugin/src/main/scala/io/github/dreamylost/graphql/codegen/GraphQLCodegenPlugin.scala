@@ -37,7 +37,7 @@ class GraphQLCodegenPlugin(configuration: Configuration, private[codegen] val co
 
     lazy val GraphQLCodegenPluginDependencies: Def.Setting[Seq[ModuleID]] = libraryDependencies ++= Seq(
       "javax.validation" % "validation-api" % javaxValidationApiVersion.value.getOrElse(jValidation),
-      "io.github.kobylynskyi" % "graphql-java-codegen" % graphqlJavaCodegenVersion.value.getOrElse(codegen)
+      "com.lifeway.contentplatform" % "graphql-java-codegen" % graphqlJavaCodegenVersion.value.getOrElse(codegen)
     )
 
     lazy val schemaFinderConfig: SchemaFinderConfig = SchemaFinderConfig(null)
@@ -215,7 +215,6 @@ class GraphQLCodegenPlugin(configuration: Configuration, private[codegen] val co
         args.foreach(a ⇒ sLog.value.info(s"obtain args: $a"))
         args
       }, graphqlCodegen := {
-        sLog.value.info(s"Generating files: ${BuildInfo.toString}")
         val mappingConfigSupplier = buildJsonSupplier(configurationFiles.value)
         val language = mappingConfigSupplier.map(_.get()).map(_.getGeneratedLanguage).getOrElse(generatedLanguage.value)
         var result = Seq.empty[File]
