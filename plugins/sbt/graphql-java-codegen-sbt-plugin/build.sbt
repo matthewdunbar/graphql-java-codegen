@@ -27,7 +27,7 @@ lazy val `graphql-codegen-sbt-plugin` = Project(id = "graphql-codegen-sbt-plugin
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
-      releaseStepCommandAndRemaining("^ publishSigned"),
+      releaseStepCommandAndRemaining("^ publish"),
       setNextVersion,
       commitNextVersion,
     ),
