@@ -10,6 +10,7 @@ import com.kobylynskyi.graphql.codegen.model.MappingConfigDefaultValuesInitializ
 import com.kobylynskyi.graphql.codegen.model.MappingConfigValidator;
 import com.kobylynskyi.graphql.codegen.model.MappingContext;
 import com.kobylynskyi.graphql.codegen.model.definitions.ExtendedDocument;
+import com.kobylynskyi.graphql.codegen.model.definitions.ExtendedObjectTypeDefinition;
 import com.kobylynskyi.graphql.codegen.model.definitions.ExtendedScalarTypeDefinition;
 import com.kobylynskyi.graphql.codegen.parser.GraphQLDocumentParser;
 import com.kobylynskyi.graphql.codegen.supplier.MappingConfigSupplier;
@@ -158,6 +159,14 @@ public abstract class GraphQLCodegen {
 
     private List<File> processDefinitions(ExtendedDocument document) {
         initCustomTypeMappings(document.getScalarDefinitions());
+
+        for (ExtendedObjectTypeDefinition d : document.getTypeDefinitions()) {
+            System.out.println("Mapping" + d.getName());
+            mappingConfig.putCustomTypeMappingIfAbsent(d.getName(), Utils.wrapString(d.getName(), "scala.Option[", "]"));
+            mappingConfig.putCustomTypeMappingIfAbsent(d.getName() + "!", d.getName());
+        }
+
+
         MappingContext context = MappingContext.builder()
                 .setMappingConfig(mappingConfig)
                 .setOutputDirectory(outputDir)
