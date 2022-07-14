@@ -1,3 +1,10 @@
+buildscript {
+    ext {
+        artifactory_user = System.getenv('ARTIFACTORY_LW_USER')
+        artifactory_password = System.getenv('ARTIFACTORY_LW_KEY')
+    }
+}
+
 plugins {
     id "java"
     id "idea"
@@ -76,51 +83,8 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId "graphql-java-codegen"
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-
-            pom {
-                name = "GraphQL Java CodeGen"
-                description = "Java Code Generator based on GraphQL schema"
-                url = "https://github.com/kobylynskyi/graphql-java-codegen"
-                organization {
-                    name = "io.github.kobylynskyi"
-                    url = "https://github.com/kobylynskyi"
-                }
-                issueManagement {
-                    system = "GitHub"
-                    url = "https://github.com/kobylynskyi/graphql-java-codegen/issues"
-                }
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "https://github.com/kobylynskyi/graphql-java-codegen/blob/master/LICENSE"
-                        distribution = "repo"
-                    }
-                }
-                scm {
-                    url = "https://github.com/kobylynskyi/graphql-java-codegen"
-                    connection = "scm:git:git://github.com/kobylynskyi/graphql-java-codegen.git"
-                    developerConnection = "scm:git:ssh://git@github.com:kobylynskyi/graphql-java-codegen.git"
-                }
-                developers {
-                    developer {
-                        id = "kobylynskyi"
-                        name = "Bogdan Kobylynskyi"
-                        email = "92bogdan@gmail.com"
-                    }
-                }
-            }
-        }
-        ivy(IvyPublication) {
+            groupId = 'com.lifeway.contentplatform'
+            artifactId = 'graphql-java-codegen'
             from components.java
             versionMapping {
                 usage('java-api') {
@@ -134,18 +98,10 @@ publishing {
     }
     repositories {
         maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            url 'https://artifactory.prod.lifeway.com/artifactory/contentplatform'
             credentials {
-                username sonatypeUsername
-                password sonatypePassword
-            }
-        }
-        ivy {
-            url "${System.properties['user.home']}/.ivy2/local"
-            patternLayout {
-                artifact '[organisation]/[module]/[revision]/[ext]s/[artifact](-[classifier])(.[ext])'
-                // for ci and local, must publish to ivy2 local, can be used for sbt plugin
-                ivy '[organisation]/[module]/[revision]/[type]s/[artifact](.[ext])'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
             }
         }
     }
